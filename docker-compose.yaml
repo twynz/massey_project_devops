@@ -1,0 +1,29 @@
+version: '2'
+services:
+#start all servers
+
+  # mysql:
+  #   container_name: mysql
+  #   image: mysql:5.7
+  #   expose:
+  #     - "3306"
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=123
+  #   volumes:
+  #     - $HOME/DockerData/mysql:/var/lib/mysql
+  #   command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci --max-connections=1000 --default-time-zone='+12:00'
+
+  mu:
+    container_name: mu_backend
+    env_file: ./env.sh
+    build: 
+      context: ./  
+      dockerfile: Dockerfile
+    ports:
+      - "10003:10003"
+    tty: true
+    working_dir: /src/massey-project-backend
+    command: mvn spring-boot:run
+  
