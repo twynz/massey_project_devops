@@ -1,37 +1,42 @@
 version: '3.7'
 
 services:
-  massey_db:
-    image: mysql:5.7
+  gateway:
+    container_name: gateway
     ports:
-      - "3306:3306"
-    restart: always
-    environment:
-      - "MYSQL_DATABASE=massey"
-      - "MYSQL_ROOT_PASSWORD=123"
-    volumes:
-      - ./db-data:/var/lib/mysql
-      - ./chives-db:/docker-entrypoint-initdb.d
-    networks:
-      helper-dev-net:
-        aliases:
-          - 'massey_db'
-
-  massey_backend:
+      - 80:80
+    expose: 
+      - 80
     build:
-      context: chives-backend
+      context: './gateway'
       dockerfile: Dockerfile
-    ports:
-      - "10005:10005"
-    restart: always
-    depends_on: 
-      - massey_db 
+    depends_on:
+      - chives-front
+    links:
+      - chives-front
     networks:
       helper-dev-net:
         aliases:
-          - 'massey_back_end'
+          - 'gateway'
+  chives-front:
+    container_name: chives
+    build:
+      context: chives
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - '3000:3000'
+    networks:
+      helper-dev-net:
+        aliases:
+           - 'chives-fe'
+    environment:
+      - NODE_ENV=development
 volumes:
     db-data:
 networks:
     helper-dev-net:
       driver: bridge
+
